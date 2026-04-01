@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MULTIVERSE BATTLE ARENA</title>
+<style>
+/* ── VARIABLES ─────────────────────────────────────────────── */
+:root {
+  --bg:      #04060f;
+  --bg2:     #070b18;
+  --bg3:     #0a1020;
+  --panel:   #080d1c;
+  --panel2:  #0d1428;
+  --cyan:    #00e5ff;
+  --cyan2:   #00bcd4;
+  --purple:  #b44eff;
+  --gold:    #ffd740;
+  --gold2:   #ffab00;
+  --red:     #ff1744;
+  --orange:  #ff6d00;
+  --text:    #e0eaff;
+  --text2:   #8aadcc;
+  --text3:   #3a5a7a;
+  --border:  #0d2040;
+  --border2: #1a3a60;
+  --blue-team:   #008cff;
+  --blue-glow:   rgba(0,140,255,0.6);
+  --orange-team: #ff8c00;
+  --orange-glow: rgba(255,140,0,0.6);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Trebuchet MS','Gill Sans MT',Arial,sans-serif;
+  font-size:16px; min-height:100vh; overflow-x:hidden;
+}
+
+/* ── HEXAGON BACKGROUND ─────────────────────────────────────── */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background-color:var(--bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 14 L56 42 L28 56 L0 42 L0 14 Z' fill='none' stroke='rgba(0,140,255,0.06)' stroke-width='1'/%3E%3Cpath d='M28 44 L56 58 L56 86 L28 100 L0 86 L0 58 Z' fill='none' stroke='rgba(0,140,255,0.06)' stroke-width='1'/%3E%3Cpath d='M56 14 L84 0' stroke='rgba(0,140,255,0.06)' stroke-width='1'/%3E%3Cpath d='M56 42 L84 56' stroke='rgba(0,140,255,0.06)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:56px 100px;
+  pointer-events:none;
+}
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%,   rgba(0,140,255,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 90%,  rgba(180,78,255,0.09) 0%,transparent 50%),
+    radial-gradient(ellipse 40% 40% at 90% 5%,   rgba(255,215,64,0.05) 0%,transparent 50%);
+  pointer-events:none;
+}
+.scanlines {
+  position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0.35;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);
+}
+#app { position:relative; z-index:1; }
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+header {
+  text-align:center; padding:0 24px 32px;
+  border-bottom:1px solid var(--border2); position:relative; overflow:hidden;
+}
+.hdr-banner {
+  width:100%; max-height:220px; object-fit:cover; object-position:center 30%;
+  display:block; margin-bottom:0;
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+  filter:brightness(0.7) saturate(1.3);
+}
+.hdr-banner-ph {
+  width:100%; height:140px;
+  background:linear-gradient(135deg,rgba(0,20,60,0.8),rgba(40,0,80,0.8),rgba(60,30,0,0.8));
+  display:flex; align-items:center; justify-content:center;
+  font-size:48px; opacity:0.2; margin-bottom:0;
+}
+.hdr-tag {
+  font-family:'Courier New',monospace; font-size:10px; color:var(--cyan);
+  letter-spacing:6px; opacity:0.6; margin-bottom:14px; margin-top:20px;
+}
+h1 { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-weight:900; line-height:1.1; text-transform:uppercase; }
+.h1-top {
+  display:block; font-size:clamp(14px,4vw,38px); letter-spacing:8px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter:drop-shadow(0 0 14px rgba(0,229,255,0.4));
+}
+.h1-main {
+  display:block; font-size:clamp(24px,6.5vw,68px); letter-spacing:5px;
+  background:linear-gradient(135deg,var(--gold) 0%,#fff 40%,var(--gold) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter:drop-shadow(0 0 26px rgba(255,215,64,0.4));
+}
+.h1-sub {
+  display:block; font-size:clamp(14px,4vw,36px); letter-spacing:10px;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter:drop-shadow(0 0 14px rgba(180,78,255,0.4));
+}
+.hdr-sub { font-family:'Courier New',monospace; font-size:10px; color:var(--text3); letter-spacing:4px; margin-top:12px; }
+.hdr-line { width:340px; height:1px; margin:20px auto 0; background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),var(--gold),transparent); opacity:0.5; }
+
+/* ── NAV ────────────────────────────────────────────────────── */
+nav {
+  display:flex; justify-content:center; gap:0;
+  border-bottom:1px solid var(--border);
+  background:rgba(4,6,15,0.88); position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(12px);
+}
+.nav-btn {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase;
+  color:var(--text3); background:none; border:none; border-bottom:2px solid transparent;
+  padding:17px 28px 19px; cursor:pointer; transition:all 0.2s; position:relative;
+}
+.nav-btn::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  transform:scaleX(0); transition:transform 0.25s;
+}
+.nav-btn:hover { color:var(--text2); }
+.nav-btn.active { color:var(--cyan); }
+.nav-btn.active::after { transform:scaleX(1); }
+.nav-io-btn {
+  font-family:'Courier New',monospace; font-size:9px; font-weight:700; letter-spacing:3px;
+  background:transparent; color:var(--text3); border:1px solid var(--border2);
+  padding:7px 14px; cursor:pointer; transition:all 0.2s; text-transform:uppercase; white-space:nowrap;
+}
+.nav-io-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+
+/* ── MAIN ───────────────────────────────────────────────────── */
+main { max-width:1200px; margin:0 auto; padding:44px 24px; }
+.page { display:none; animation:fadeUp 0.3s ease; }
+.page.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── BUTTONS ────────────────────────────────────────────────── */
+.btn {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+  border:none; cursor:pointer; padding:12px 28px; transition:all 0.2s; position:relative;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.btn-cyan  { background:rgba(0,229,255,0.1); color:var(--cyan); border:1px solid var(--cyan2); box-shadow:0 0 20px rgba(0,229,255,0.3); }
+.btn-cyan:hover  { background:rgba(0,229,255,0.22); box-shadow:0 0 40px rgba(0,229,255,0.6); transform:translateY(-1px); }
+.btn-purple{ background:rgba(180,78,255,0.1); color:var(--purple); border:1px solid #7c22cc; box-shadow:0 0 20px rgba(180,78,255,0.3); }
+.btn-purple:hover{ background:rgba(180,78,255,0.22); box-shadow:0 0 40px rgba(180,78,255,0.6); transform:translateY(-1px); }
+.btn-gold  { background:rgba(255,215,64,0.1); color:var(--gold); border:1px solid var(--gold2); box-shadow:0 0 20px rgba(255,215,64,0.3); }
+.btn-gold:hover  { background:rgba(255,215,64,0.22); box-shadow:0 0 40px rgba(255,215,64,0.6); transform:translateY(-1px); }
+.btn-ghost { background:transparent; color:var(--text2); border:1px solid var(--border2); clip-path:none; font-size:10px; padding:9px 20px; }
+.btn-ghost:hover { border-color:var(--cyan); color:var(--cyan); }
+.btn-danger{ background:transparent; color:var(--red); border:1px solid rgba(255,23,68,0.35); clip-path:none; font-size:9px; padding:5px 12px; }
+.btn-danger:hover{ background:rgba(255,23,68,0.12); border-color:var(--red); }
+.btn-mega  { font-size:13px; padding:22px 64px; clip-path:polygon(20px 0,100% 0,calc(100% - 20px) 100%,0 100%); letter-spacing:6px; }
+
+/* ── GENERATE PAGE ──────────────────────────────────────────── */
+.gen-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; margin-bottom:56px; }
+.gen-hint { font-family:'Courier New',monospace; font-size:10px; color:var(--text3); letter-spacing:4px; }
+
+/* ── TEAMS DISPLAY ──────────────────────────────────────────── */
+.teams-wrap { animation:fadeUp 0.5s ease; }
+.teams-ts { text-align:center; font-family:'Courier New',monospace; font-size:9px; color:var(--text3); letter-spacing:5px; margin-bottom:28px; }
+
+.team-block { margin-bottom:0; }
+
+/* Team panel */
+.team-panel {
+  border:1px solid; position:relative; padding:20px 20px 24px;
+}
+.team-alpha { border-color:rgba(0,140,255,0.4); background:linear-gradient(180deg,rgba(0,60,160,0.18),rgba(0,20,60,0.10)); box-shadow:0 0 40px rgba(0,140,255,0.07); }
+.team-beta  { border-color:rgba(255,140,0,0.4);  background:linear-gradient(180deg,rgba(160,80,0,0.18), rgba(60,30,0,0.10));  box-shadow:0 0 40px rgba(255,140,0,0.07); }
+.team-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.team-alpha::before { background:linear-gradient(90deg,transparent,#008cff,#00c8ff,transparent); }
+.team-beta::before  { background:linear-gradient(90deg,transparent,#ff8c00,#ffb300,transparent); }
+.team-lbl {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:9px; font-weight:700; letter-spacing:5px; text-transform:uppercase;
+  margin-bottom:18px; text-align:center;
+}
+.team-alpha .team-lbl { color:#4db8ff; text-shadow:0 0 12px rgba(0,140,255,0.9); }
+.team-beta  .team-lbl { color:#ffb347; text-shadow:0 0 12px rgba(255,140,0,0.9); }
+
+/* Hero cards row */
+.result-cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+/* ── VS SEPARATOR ───────────────────────────────────────────── */
+.vs-separator {
+  display:flex; align-items:center; justify-content:center;
+  padding:24px 0; position:relative; margin:0 20px;
+}
+.vs-separator::before,
+.vs-separator::after {
+  content:''; flex:1; height:1px;
+}
+.vs-separator::before { background:linear-gradient(90deg,transparent,rgba(0,140,255,0.5)); }
+.vs-separator::after  { background:linear-gradient(90deg,rgba(255,140,0,0.5),transparent); }
+.vs-badge {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:clamp(36px,6vw,64px); font-weight:900; letter-spacing:6px;
+  padding:0 32px; position:relative;
+  color:#fff;
+  text-shadow:
+    0 0 10px #ff1744,
+    0 0 20px #ff1744,
+    0 0 40px #ff6d00,
+    0 0 80px rgba(255,23,68,0.5),
+    0 0 120px rgba(255,109,0,0.3);
+  animation:vsPulse 2s ease-in-out infinite;
+}
+@keyframes vsPulse {
+  0%,100% { text-shadow:0 0 10px #ff1744,0 0 20px #ff1744,0 0 40px #ff6d00,0 0 80px rgba(255,23,68,0.5); }
+  50%      { text-shadow:0 0 16px #ff1744,0 0 32px #ff4400,0 0 64px #ff6d00,0 0 120px rgba(255,23,68,0.7),0 0 160px rgba(255,109,0,0.4); }
+}
+
+/* ── RESULT HERO CARD ───────────────────────────────────────── */
+.result-card {
+  display:flex; flex-direction:column;
+  border:1px solid; position:relative; overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+  background:var(--panel);
+}
+.team-alpha .result-card { border-color:rgba(0,140,255,0.3); }
+.team-beta  .result-card { border-color:rgba(255,140,0,0.3); }
+.result-card:hover { transform:translateY(-3px); }
+.team-alpha .result-card:hover { box-shadow:0 8px 32px rgba(0,140,255,0.35); border-color:rgba(0,180,255,0.7); }
+.team-beta  .result-card:hover { box-shadow:0 8px 32px rgba(255,140,0,0.35); border-color:rgba(255,180,0,0.7); }
+.result-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; z-index:2; }
+.team-alpha .result-card::before { background:linear-gradient(90deg,transparent,#008cff,#00c8ff,transparent); }
+.team-beta  .result-card::before { background:linear-gradient(90deg,transparent,#ff8c00,#ffb300,transparent); }
+
+/* image zone — ratio 5:7 */
+.rc-img { width:100%; aspect-ratio:5/7; background:var(--bg3); position:relative; overflow:hidden; flex-shrink:0; }
+.rc-img img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+.rc-img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:52px; opacity:0.07; }
+.rc-img::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:55%; pointer-events:none;
+}
+.team-alpha .rc-img::after { background:linear-gradient(transparent,rgba(0,15,50,0.97)); }
+.team-beta  .rc-img::after { background:linear-gradient(transparent,rgba(40,15,0,0.97)); }
+
+/* Hero name — big neon, overlaid on image */
+.rc-name-wrap { position:absolute; bottom:0; left:0; right:0; z-index:3; padding:12px 10px 8px; text-align:center; }
+.rc-name {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:clamp(15px,2.8vw,26px); font-weight:900;
+  text-transform:uppercase; letter-spacing:2px; line-height:1.1;
+}
+.team-alpha .rc-name { color:#e8f6ff; text-shadow:0 0 8px #008cff,0 0 20px #008cff,0 0 40px rgba(0,140,255,0.7),0 1px 3px #000; }
+.team-beta  .rc-name { color:#fff8e0; text-shadow:0 0 8px #ff8c00,0 0 20px #ff8c00,0 0 40px rgba(255,140,0,0.7),0 1px 3px #000; }
+
+/* Ability zone */
+.rc-ability-zone {
+  padding:12px 12px 14px; background:var(--panel2); border-top:1px solid;
+  cursor:pointer; transition:background 0.2s; display:flex; flex-direction:column; gap:6px;
+}
+.team-alpha .rc-ability-zone { border-top-color:rgba(0,140,255,0.2); }
+.team-beta  .rc-ability-zone { border-top-color:rgba(255,140,0,0.2); }
+.team-alpha .rc-ability-zone:hover { background:rgba(0,60,160,0.3); }
+.team-beta  .rc-ability-zone:hover { background:rgba(100,50,0,0.3); }
+.rc-ability-header { display:flex; align-items:center; gap:8px; }
+.ability-icon { font-size:16px; flex-shrink:0; line-height:1; }
+.a-pill {
+  font-family:'Courier New',monospace; font-size:8px; letter-spacing:1px;
+  padding:2px 7px; flex-shrink:0; text-transform:uppercase; font-weight:700;
+}
+.a-pill.active  { background:rgba(255,215,64,0.12); border:1px solid var(--gold2); color:var(--gold); }
+.a-pill.passive { background:rgba(0,229,255,0.10);  border:1px solid var(--cyan2);  color:var(--cyan); }
+.a-pill.special { background:rgba(180,78,255,0.15); border:1px solid #b44eff;       color:var(--purple); }
+.a-name { font-family:'Trebuchet MS','Gill Sans MT',Arial,sans-serif; font-size:13px; font-weight:700; color:var(--text); flex:1; }
+.a-hint { font-family:'Courier New',monospace; font-size:8px; color:var(--text3); letter-spacing:2px; }
+
+/* ── WIN LOG SECTION ────────────────────────────────────────── */
+.win-section {
+  margin-top:28px; border:1px solid var(--border2); padding:20px;
+  background:rgba(7,11,24,0.8); position:relative;
+}
+.win-section::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.win-title { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:16px; }
+.win-buttons { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.win-btn {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+  border:none; cursor:pointer; padding:14px 28px; transition:all 0.2s;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.win-btn-alpha { background:rgba(0,140,255,0.15); color:#4db8ff; border:1px solid rgba(0,140,255,0.5); }
+.win-btn-alpha:hover { background:rgba(0,140,255,0.3); box-shadow:0 0 24px rgba(0,140,255,0.5); }
+.win-btn-beta  { background:rgba(255,140,0,0.15);  color:#ffb347; border:1px solid rgba(255,140,0,0.5); }
+.win-btn-beta:hover  { background:rgba(255,140,0,0.3);  box-shadow:0 0 24px rgba(255,140,0,0.5); }
+.win-btn-draw  { background:rgba(100,100,100,0.15); color:var(--text2); border:1px solid rgba(150,150,150,0.3); }
+.win-btn-draw:hover  { background:rgba(100,100,100,0.25); }
+
+/* ── STATS PAGE ─────────────────────────────────────────────── */
+.stats-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.sec-title {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--cyan);
+  display:flex; align-items:center; gap:12px;
+}
+.sec-title::after { content:''; display:block; width:50px; height:1px; background:linear-gradient(90deg,var(--cyan),transparent); }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:32px; }
+.stat-card { background:var(--panel); border:1px solid var(--border2); padding:20px; position:relative; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--cyan),transparent); opacity:0.4; }
+.stat-num { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:clamp(28px,5vw,48px); font-weight:900; color:var(--cyan); filter:drop-shadow(0 0 8px rgba(0,229,255,0.5)); }
+.stat-lbl { font-family:'Courier New',monospace; font-size:9px; color:var(--text3); letter-spacing:3px; text-transform:uppercase; margin-top:4px; }
+.history-list { display:flex; flex-direction:column; gap:10px; }
+.history-item {
+  background:var(--panel); border:1px solid var(--border2); padding:14px 18px;
+  display:flex; flex-direction:column; gap:6px; position:relative;
+}
+.history-item::before { content:''; position:absolute; top:0; left:0; bottom:0; width:3px; }
+.history-item.win-alpha::before { background:var(--blue-team); }
+.history-item.win-beta::before  { background:var(--orange-team); }
+.history-item.win-draw::before  { background:var(--text3); }
+.history-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.history-date { font-family:'Courier New',monospace; font-size:9px; color:var(--text3); letter-spacing:2px; }
+.history-winner {
+  font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+}
+.winner-alpha { color:#4db8ff; text-shadow:0 0 8px rgba(0,140,255,0.7); }
+.winner-beta  { color:#ffb347; text-shadow:0 0 8px rgba(255,140,0,0.7); }
+.winner-draw  { color:var(--text2); }
+.history-heroes { font-family:'Trebuchet MS',Arial,sans-serif; font-size:12px; color:var(--text2); }
+.history-abilities { font-family:'Courier New',monospace; font-size:10px; color:var(--text3); }
+.history-del { position:absolute; top:10px; right:10px; background:transparent; border:none; color:var(--text3); cursor:pointer; font-size:13px; padding:2px 6px; transition:color 0.2s; }
+.history-del:hover { color:var(--red); }
+.no-stats { text-align:center; padding:60px 24px; color:var(--text3); font-family:'Courier New',monospace; font-size:11px; letter-spacing:3px; line-height:2.5; }
+
+/* ── HEROES PAGE ────────────────────────────────────────────── */
+.heroes-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
+.heroes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:24px; }
+.no-heroes { grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--text3); font-family:'Courier New',monospace; font-size:11px; letter-spacing:3px; line-height:2.5; }
+
+/* ── HERO CARD (playing card) ───────────────────────────────── */
+.hero-card {
+  aspect-ratio:5/7; background:var(--panel); border:2px solid var(--border2);
+  position:relative; overflow:hidden; display:flex; flex-direction:column;
+  cursor:pointer; transition:border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.hero-card:hover { border-color:var(--cyan); box-shadow:0 0 30px rgba(0,229,255,0.22),0 16px 48px rgba(0,0,0,0.6); transform:translateY(-4px) scale(1.02); }
+.hero-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,229,255,0.05) 0%,transparent 40%,rgba(180,78,255,0.05) 100%); pointer-events:none; z-index:1; }
+.card-top-bar { position:absolute; top:0; left:0; right:0; height:3px; z-index:3; background:linear-gradient(90deg,var(--cyan),var(--purple),var(--gold)); }
+.card-bot-bar { position:absolute; bottom:0; left:0; right:0; height:2px; z-index:3; background:linear-gradient(90deg,var(--gold),var(--purple),var(--cyan)); opacity:0.4; }
+.cc { position:absolute; z-index:4; width:14px; height:14px; border-color:var(--cyan); border-style:solid; opacity:0.5; }
+.cc.tl{top:7px;left:7px;border-width:1px 0 0 1px} .cc.tr{top:7px;right:7px;border-width:1px 1px 0 0}
+.cc.bl{bottom:7px;left:7px;border-width:0 0 1px 1px} .cc.br{bottom:7px;right:7px;border-width:0 1px 1px 0}
+.card-img { flex:0 0 58%; position:relative; overflow:hidden; background:var(--bg3); }
+.card-img img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+.card-img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:52px; opacity:0.07; }
+.card-img::after { content:''; position:absolute; bottom:0; left:0; right:0; height:45%; background:linear-gradient(transparent,var(--panel)); pointer-events:none; }
+.card-name-strip { background:linear-gradient(135deg,rgba(4,6,15,0.97),rgba(10,20,50,0.95)); border-top:1px solid rgba(0,229,255,0.12); border-bottom:1px solid rgba(0,229,255,0.06); padding:7px 12px; text-align:center; }
+.card-name { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.card-abilities { flex:1; padding:7px 9px; display:flex; flex-direction:column; gap:3px; background:rgba(4,6,15,0.75); overflow:hidden; }
+.card-ab-row { display:flex; align-items:center; gap:5px; padding:3px 3px; cursor:pointer; border:1px solid transparent; transition:border-color 0.15s,background 0.15s; }
+.card-ab-row:hover { border-color:var(--border2); background:rgba(0,229,255,0.04); }
+.ab-icon { font-size:12px; flex-shrink:0; line-height:1; }
+.ab-txt { font-family:'Trebuchet MS',Arial,sans-serif; font-size:11px; font-weight:600; color:var(--text2); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ab-tag { font-family:'Courier New',monospace; font-size:8px; flex-shrink:0; }
+.ab-tag.active  { color:var(--gold); }
+.ab-tag.passive { color:var(--cyan); }
+.ab-tag.special { color:var(--purple); }
+.card-acts { position:absolute; top:10px; right:10px; z-index:10; display:flex; gap:5px; opacity:0; transform:translateY(-4px); transition:opacity 0.2s,transform 0.2s; }
+.hero-card:hover .card-acts { opacity:1; transform:translateY(0); }
+.card-act-btn { font-family:'Trebuchet MS',Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:5px 10px; border:1px solid; cursor:pointer; backdrop-filter:blur(12px); transition:all 0.15s; }
+.ca-edit { background:rgba(0,229,255,0.15); color:var(--cyan); border-color:var(--cyan2); }
+.ca-edit:hover { background:rgba(0,229,255,0.3); }
+.ca-del  { background:rgba(255,23,68,0.15); color:var(--red); border-color:rgba(255,23,68,0.5); }
+.ca-del:hover  { background:rgba(255,23,68,0.3); }
+/* always show on mobile */
+@media(hover:none){ .card-acts{opacity:1;transform:translateY(0);} }
+
+/* ── MODAL ──────────────────────────────────────────────────── */
+.modal-overlay { position:fixed; inset:0; background:rgba(2,4,12,0.93); z-index:1000; display:flex; align-items:center; justify-content:center; padding:24px; backdrop-filter:blur(10px); animation:fadeUp 0.2s ease; }
+.modal-overlay.hidden { display:none; }
+.modal { background:var(--bg2); border:1px solid var(--border2); width:100%; max-width:580px; max-height:90vh; overflow-y:auto; position:relative; }
+.modal::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--cyan),var(--purple),var(--gold)); }
+.modal-hdr { padding:22px 26px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.modal-ttl { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:4px; color:var(--cyan); text-transform:uppercase; }
+.modal-x { background:none; border:none; color:var(--text3); font-size:18px; cursor:pointer; padding:4px 8px; transition:color 0.2s; line-height:1; }
+.modal-x:hover { color:var(--red); }
+.modal-body { padding:26px; }
+.modal-ftr { padding:14px 26px 24px; display:flex; justify-content:flex-end; gap:10px; }
+.fg { margin-bottom:18px; }
+.flbl { font-family:'Courier New',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--text3); margin-bottom:7px; display:block; }
+.finput,.ftxt { width:100%; background:var(--bg3); border:1px solid var(--border2); color:var(--text); font-family:'Trebuchet MS',Arial,sans-serif; font-size:15px; font-weight:500; padding:10px 14px; outline:none; resize:vertical; transition:border-color 0.2s,box-shadow 0.2s; }
+.finput:focus,.ftxt:focus { border-color:var(--cyan); box-shadow:0 0 12px rgba(0,229,255,0.15); }
+.ftxt { min-height:78px; }
+::placeholder { color:var(--text3); }
+.img-up-area { border:2px dashed var(--border2); background:var(--bg3); position:relative; overflow:hidden; cursor:pointer; transition:border-color 0.2s; }
+.img-up-area:hover { border-color:var(--cyan); }
+.img-up-area input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.img-card-wrap { width:200px; margin:0 auto; aspect-ratio:5/7; position:relative; overflow:hidden; }
+.img-card-wrap img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+.img-hint-wrap { padding:24px 16px; text-align:center; color:var(--text3); font-family:'Courier New',monospace; font-size:10px; letter-spacing:2px; line-height:2.2; }
+.img-hint-ico { font-size:28px; display:block; margin-bottom:6px; }
+.img-rm-btn { position:absolute; top:8px; right:8px; z-index:5; background:rgba(4,6,15,0.85); border:1px solid var(--red); color:var(--red); font-size:9px; padding:4px 10px; cursor:pointer; font-family:'Courier New',monospace; letter-spacing:1px; transition:background 0.15s; }
+.img-rm-btn:hover { background:rgba(255,23,68,0.2); }
+.ab-block { background:var(--panel2); border:1px solid var(--border); border-left:2px solid var(--border2); padding:14px; margin-bottom:10px; transition:border-left-color 0.2s; }
+.ab-block.is-active  { border-left-color:var(--gold); }
+.ab-block.is-passive { border-left-color:var(--cyan); }
+.ab-block.is-special { border-left-color:var(--purple); }
+.ab-block-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.ab-block-ttl { font-family:'Courier New',monospace; font-size:9px; letter-spacing:3px; }
+.ab-block-ttl.t-active  { color:var(--gold); }
+.ab-block-ttl.t-passive { color:var(--cyan); }
+.ab-block-ttl.t-special { color:var(--purple); }
+.type-tog { display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap; }
+.type-tog-btn { font-family:'Courier New',monospace; font-size:9px; letter-spacing:2px; border:1px solid var(--border2); background:transparent; color:var(--text3); padding:6px 12px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+.type-tog-btn.s-active  { border-color:var(--gold);   color:var(--gold);   background:rgba(255,215,64,0.07); }
+.type-tog-btn.s-passive { border-color:var(--cyan);   color:var(--cyan);   background:rgba(0,229,255,0.07); }
+.type-tog-btn.s-special { border-color:var(--purple); color:var(--purple); background:rgba(180,78,255,0.1); }
+.special-note { font-family:'Courier New',monospace; font-size:9px; color:var(--purple); letter-spacing:1px; line-height:1.6; padding:8px 10px; border:1px solid rgba(180,78,255,0.2); background:rgba(180,78,255,0.06); margin-bottom:10px; }
+.am-hero  { font-family:'Courier New',monospace; font-size:9px; color:var(--text3); letter-spacing:4px; text-transform:uppercase; padding:14px 26px 0; }
+.am-name  { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:20px; font-weight:700; color:var(--text); padding:8px 26px 0; }
+.am-tag   { padding:10px 26px; }
+.am-rules { padding:20px 26px 28px; border-top:1px solid var(--border); font-family:'Trebuchet MS',Arial,sans-serif; font-size:16px; line-height:1.75; color:var(--text2); white-space:pre-wrap; }
+.empty-rules { color:var(--text3); font-style:italic; font-size:14px; }
+.no-result { text-align:center; padding:60px 24px; color:var(--text3); font-family:'Courier New',monospace; font-size:11px; letter-spacing:3px; line-height:2; }
+
+
+/* -- BETA SECTION ------------------------------------------ */
+.beta-card {
+  aspect-ratio:5/7; background:var(--panel);
+  border:2px solid rgba(180,78,255,0.35);
+  position:relative; overflow:hidden; display:flex; flex-direction:column;
+  transition:border-color 0.25s,box-shadow 0.25s,transform 0.25s;
+}
+.beta-card:hover { border-color:var(--purple); box-shadow:0 0 28px rgba(180,78,255,0.25),0 12px 40px rgba(0,0,0,0.6); transform:translateY(-4px) scale(1.02); }
+.beta-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(180,78,255,0.06) 0%,transparent 50%); pointer-events:none; z-index:1; }
+.beta-top-bar { position:absolute; top:0; left:0; right:0; height:3px; z-index:3; background:linear-gradient(90deg,var(--purple),#ff44cc,var(--purple)); }
+.beta-stamp { position:absolute; top:10px; left:10px; z-index:10; background:rgba(180,78,255,0.15); border:1px solid var(--purple); color:var(--purple); font-family:'Courier New',monospace; font-size:8px; font-weight:700; letter-spacing:2px; padding:2px 7px; text-transform:uppercase; }
+.beta-card .card-img { flex:0 0 40%; position:relative; overflow:hidden; background:var(--bg3); }
+.beta-card .card-img img { width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+.beta-card .card-img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:36px; opacity:0.07; }
+.beta-card .card-img::after { content:''; position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(transparent,var(--panel)); pointer-events:none; }
+.beta-name-strip { background:linear-gradient(135deg,rgba(4,6,15,0.97),rgba(20,10,40,0.95)); border-top:1px solid rgba(180,78,255,0.15); border-bottom:1px solid rgba(180,78,255,0.08); padding:6px 12px; text-align:center; }
+.beta-name { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--purple); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.beta-body { flex:1; padding:8px 10px; background:rgba(4,6,15,0.75); display:flex; flex-direction:column; gap:4px; overflow:hidden; }
+.beta-abilities-mini { display:flex; flex-direction:column; gap:2px; }
+.beta-ab-mini { display:flex; align-items:center; gap:4px; }
+.beta-ab-mini-icon { font-size:10px; flex-shrink:0; }
+.beta-ab-mini-name { font-family:'Trebuchet MS',Arial,sans-serif; font-size:10px; font-weight:600; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+.beta-ab-mini-tag { font-family:'Courier New',monospace; font-size:7px; flex-shrink:0; }
+.beta-ab-mini-tag.active  { color:var(--gold); }
+.beta-ab-mini-tag.passive { color:var(--cyan); }
+.beta-ab-mini-tag.special { color:var(--purple); }
+.beta-notes-preview { font-family:'Trebuchet MS',Arial,sans-serif; font-size:10px; color:var(--text3); line-height:1.4; border-top:1px solid var(--border); padding-top:5px; margin-top:4px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.beta-card .card-acts { position:absolute; top:10px; right:10px; z-index:10; display:flex; gap:5px; opacity:0; transform:translateY(-4px); transition:opacity 0.2s,transform 0.2s; }
+.beta-card:hover .card-acts { opacity:1; transform:translateY(0); }
+@media(hover:none){ .beta-card .card-acts{opacity:1;transform:translateY(0);} }
+.no-beta { grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--text3); font-family:'Courier New',monospace; font-size:11px; letter-spacing:3px; line-height:2.5; }
+
+/* -- BETA MODAL EXTRA */
+.beta-promote-btn { font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; background:rgba(180,78,255,0.1); color:var(--purple); border:1px solid rgba(180,78,255,0.4); padding:8px 18px; cursor:pointer; transition:all 0.2s; }
+.beta-promote-btn:hover { background:rgba(180,78,255,0.25); box-shadow:0 0 20px rgba(180,78,255,0.4); }
+
+/* ── SCROLLBAR ──────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border2)} ::-webkit-scrollbar-thumb:hover{background:var(--cyan2)}
+
+/* ── MOBILE ─────────────────────────────────────────────────── */
+@media(max-width:700px){
+  header{padding:0 14px 24px}
+  .h1-top{font-size:clamp(12px,5vw,20px);letter-spacing:4px}
+  .h1-main{font-size:clamp(20px,9vw,40px);letter-spacing:3px}
+  .h1-sub{font-size:clamp(12px,5vw,20px);letter-spacing:5px}
+  .hdr-sub{font-size:9px;letter-spacing:2px}
+  nav{justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  nav::-webkit-scrollbar{display:none}
+  .nav-btn{padding:16px 18px 18px;font-size:9px;letter-spacing:2px;flex-shrink:0}
+  .nav-io-btn{font-size:8px;padding:6px 10px;flex-shrink:0}
+  main{padding:24px 12px}
+  .btn-mega{clip-path:none;padding:16px 32px;font-size:11px;letter-spacing:3px;width:100%}
+  .gen-wrap{width:100%}
+  .result-cards{grid-template-columns:1fr 1fr;gap:10px}
+  .rc-name{font-size:clamp(10px,2.5vw,14px);letter-spacing:1px}
+  .rc-ability-zone{padding:9px 9px 11px}
+  .a-name{font-size:12px}
+  .a-pill{font-size:7px;padding:2px 5px}
+  .vs-badge{font-size:clamp(28px,8vw,48px);padding:0 20px}
+  .heroes-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+  .heroes-hdr{margin-bottom:20px}
+  .card-name{font-size:8px;letter-spacing:1px}
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{max-width:100%;max-height:92vh;border-left:none;border-right:none;border-bottom:none}
+  .modal-body{padding:18px 16px}
+  .modal-hdr{padding:16px 18px 14px}
+  .modal-ftr{padding:12px 16px 20px}
+  .win-buttons{flex-direction:column;align-items:stretch}
+  .win-btn{text-align:center}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div id="app">
+
+<header>
+  <div id="hdr-banner-wrap">
+    <div class="hdr-banner-ph" id="hdr-banner-ph">&#127760;</div>
+  </div>
+  <div class="hdr-tag">// SYSTEM INITIALIZED &#8212; DIMENSION BRIDGE ACTIVE //</div>
+  <h1>
+    <span class="h1-top">MULTIVERSE</span>
+    <span class="h1-main">BATTLE</span>
+    <span class="h1-sub">ARENA</span>
+  </h1>
+  <div class="hdr-sub">Team Generator v3.0 &#8212; Cross-Dimensional Combat Protocol</div>
+  <div class="hdr-line"></div>
+</header>
+
+<nav>
+  <button class="nav-btn active" id="nav-generate">&#9876; G&#201;N&#201;RER</button>
+  <button class="nav-btn" id="nav-heroes">&#9672; H&#201;ROS</button>
+  <button class="nav-btn" id="nav-stats">&#9650; STATS</button>
+  <button class="nav-btn" id="nav-settings">&#9881; CONFIG</button>
+  <button class="nav-btn" id="nav-beta">&#9711; BETA</button>
+  <div style="flex:1"></div>
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;">
+    <button class="nav-io-btn" id="btn-export">&#11015; EXPORT</button>
+    <label class="nav-io-btn">&#11014; IMPORT<input type="file" accept=".json" id="import-input" style="display:none"></label>
+  </div>
+</nav>
+
+<main>
+
+  <!-- PAGE: GENERATE -->
+  <div id="page-generate" class="page active">
+    <div class="gen-wrap">
+      <button class="btn btn-cyan btn-mega" id="btn-generate">&#9889; LANCER LE TIRAGE</button>
+      <div class="gen-hint">// S&#201;LECTION AL&#201;ATOIRE DES COMBATTANTS //</div>
+    </div>
+    <div id="result-area"></div>
+  </div>
+
+  <!-- PAGE: HEROES -->
+  <div id="page-heroes" class="page">
+    <div class="heroes-hdr">
+      <div class="sec-title">Roster</div>
+      <button class="btn btn-purple" id="btn-new-hero">+ Nouveau H&#233;ros</button>
+    </div>
+    <div id="heroes-grid" class="heroes-grid"></div>
+  </div>
+
+  <!-- PAGE: STATS -->
+  <div id="page-stats" class="page">
+    <div class="stats-header">
+      <div class="sec-title">Statistiques</div>
+      <button class="btn btn-danger" id="btn-clear-stats" style="clip-path:none;">&#128465; Effacer</button>
+    </div>
+    <div class="stats-grid" id="stats-summary"></div>
+    <div class="sec-title" style="margin-bottom:16px;">Historique</div>
+    <div id="history-list" class="history-list"></div>
+  </div>
+
+  <!-- PAGE: CONFIG -->
+  <div id="page-settings" class="page">
+    <div class="sec-title" style="margin-bottom:24px;">Configuration</div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:24px;max-width:500px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.4;"></div>
+      <div class="fg">
+        <label class="flbl">Illustration du Header</label>
+        <div class="img-up-area" id="banner-up-area" style="height:120px;">
+          <input type="file" accept="image/*" id="banner-img-input">
+          <div id="banner-up-content" style="height:100%;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;color:var(--text3);font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;">
+              <div style="font-size:24px;margin-bottom:6px;">&#127760;</div>
+              CLIQUER POUR CHOISIR UNE IMAGE DE HEADER
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="banner-remove-btn" style="margin-top:4px;font-size:10px;">&#10005; Retirer l'image header</button>
+    </div>
+
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:24px;max-width:500px;margin-top:20px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.4;"></div>
+      <div style="font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:18px;">&#9729; Synchronisation Cloud</div>
+
+      <div class="fg">
+        <label class="flbl">JSONBin.io &#8212; Master Key</label>
+        <input type="password" id="jbin-key-input" class="finput" placeholder="$2b$10$..." autocomplete="off">
+      </div>
+      <div class="fg" style="margin-bottom:0;">
+        <label class="flbl">Statut</label>
+        <div id="jbin-status" style="font-family:'Courier New',monospace;font-size:11px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);color:var(--text3);">
+          Non configur&#233;
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+        <button class="btn btn-cyan" id="jbin-save-btn" style="font-size:10px;padding:10px 20px;">&#10003; Enregistrer la cl&#233;</button>
+        <button class="btn btn-ghost" id="jbin-sync-btn" style="font-size:10px;">&#8635; Synchroniser maintenant</button>
+        <button class="btn btn-ghost" id="jbin-load-btn" style="font-size:10px;">&#11015; Charger depuis le cloud</button>
+      </div>
+      <div style="margin-top:14px;font-family:'Courier New',monospace;font-size:9px;color:var(--text3);line-height:1.8;border-top:1px solid var(--border);padding-top:12px;">
+        Cr&#233;ez un compte gratuit sur <strong style="color:var(--text2);">jsonbin.io</strong><br>
+        Copiez votre <strong style="color:var(--text2);">Master Key</strong> dans le champ ci-dessus.<br>
+        La sauvegarde cloud se d&#233;clenche automatiquement &#224; chaque modification.
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: BETA -->
+  <div id="page-beta" class="page">
+    <div class="heroes-hdr">
+      <div class="sec-title">Beta Test</div>
+      <button class="btn btn-purple" id="btn-new-beta">+ Nouveau Concept</button>
+    </div>
+    <div style="background:var(--panel);border:1px solid rgba(180,78,255,0.3);padding:14px 18px;margin-bottom:24px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:0.5;"></div>
+      <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--purple);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">Zone de conception</div>
+      <div style="font-family:'Trebuchet MS',Arial,sans-serif;font-size:13px;color:var(--text2);line-height:1.6;">
+        Les h&eacute;ros ici sont en phase de test. Ils ne participent pas aux tirages d&apos;&eacute;quipes. Utilisez cette section comme carnet d&apos;id&eacute;es et de prototypes.
+      </div>
+    </div>
+    <div id="beta-grid" class="heroes-grid"></div>
+  </div>
+
+</main>
+</div>
+
+<!-- MODAL: HERO FORM -->
+<div id="hero-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-ttl" id="hero-modal-title">NOUVEAU H&#201;ROS</span>
+      <button class="modal-x" id="hero-modal-close">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="flbl">Illustration &#8212; Format Carte (ratio 5:7)</label>
+        <div class="img-up-area" id="img-up-area">
+          <input type="file" accept="image/*" id="hero-img-input">
+          <div id="img-up-content">
+            <div class="img-hint-wrap">
+              <span class="img-hint-ico">&#127183;</span>
+              CLIQUER POUR IMPORTER<br>
+              <span style="font-size:9px;opacity:0.5">Portrait &#183; ratio 5:7</span>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="hero-img-data" value="">
+      </div>
+      <div class="fg">
+        <label class="flbl">Nom du H&#233;ros</label>
+        <input type="text" id="hero-name-input" class="finput" placeholder="Ex: Kael'Vor l'Eternel">
+      </div>
+      <div id="abilities-container"></div>
+      <button class="btn btn-ghost" id="btn-add-ability" style="width:100%;margin-top:4px;">+ AJOUTER UNE CAPACIT&#201;</button>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" id="hero-modal-cancel">Annuler</button>
+      <button class="btn btn-cyan" id="hero-modal-save">&#10003; SAUVEGARDER</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ABILITY DETAIL -->
+<div id="ability-modal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hdr">
+      <span class="modal-ttl">CAPACIT&#201;</span>
+      <button class="modal-x" id="ability-modal-close">&#10005;</button>
+    </div>
+    <div class="am-hero" id="am-hero"></div>
+    <div class="am-name" id="am-name"></div>
+    <div class="am-tag"  id="am-tag"></div>
+    <div class="am-rules" id="am-rules"></div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" id="ability-modal-ok">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script></script>
+</head>
+<body>
+<div class="scanlines"></div>
+<div id="app">
+
+<header>
+  <div id="hdr-banner-wrap">
+    <div class="hdr-banner-ph" id="hdr-banner-ph">&#127760;</div>
+  </div>
+  <div class="hdr-tag">// SYSTEM INITIALIZED &#8212; DIMENSION BRIDGE ACTIVE //</div>
+  <h1>
+    <span class="h1-top">MULTIVERSE</span>
+    <span class="h1-main">BATTLE</span>
+    <span class="h1-sub">ARENA</span>
+  </h1>
+  <div class="hdr-sub">Team Generator v3.0 &#8212; Cross-Dimensional Combat Protocol</div>
+  <div class="hdr-line"></div>
+</header>
+
+<nav>
+  <button class="nav-btn active" id="nav-generate">&#9876; G&#201;N&#201;RER</button>
+  <button class="nav-btn" id="nav-heroes">&#9672; H&#201;ROS</button>
+  <button class="nav-btn" id="nav-stats">&#9650; STATS</button>
+  <button class="nav-btn" id="nav-settings">&#9881; CONFIG</button>
+  <button class="nav-btn" id="nav-beta">&#9711; BETA</button>
+  <div style="flex:1"></div>
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;">
+    <button class="nav-io-btn" id="btn-export">&#11015; EXPORT</button>
+    <label class="nav-io-btn">&#11014; IMPORT<input type="file" accept=".json" id="import-input" style="display:none"></label>
+  </div>
+</nav>
+
+<main>
+
+  <!-- PAGE: GENERATE -->
+  <div id="page-generate" class="page active">
+    <div class="gen-wrap">
+      <button class="btn btn-cyan btn-mega" id="btn-generate">&#9889; LANCER LE TIRAGE</button>
+      <div class="gen-hint">// S&#201;LECTION AL&#201;ATOIRE DES COMBATTANTS //</div>
+    </div>
+    <div id="result-area"></div>
+  </div>
+
+  <!-- PAGE: HEROES -->
+  <div id="page-heroes" class="page">
+    <div class="heroes-hdr">
+      <div class="sec-title">Roster</div>
+      <button class="btn btn-purple" id="btn-new-hero">+ Nouveau H&#233;ros</button>
+    </div>
+    <div id="heroes-grid" class="heroes-grid"></div>
+  </div>
+
+  <!-- PAGE: STATS -->
+  <div id="page-stats" class="page">
+    <div class="stats-header">
+      <div class="sec-title">Statistiques</div>
+      <button class="btn btn-danger" id="btn-clear-stats" style="clip-path:none;">&#128465; Effacer</button>
+    </div>
+    <div class="stats-grid" id="stats-summary"></div>
+    <div class="sec-title" style="margin-bottom:16px;">Historique</div>
+    <div id="history-list" class="history-list"></div>
+  </div>
+
+  <!-- PAGE: CONFIG -->
+  <div id="page-settings" class="page">
+    <div class="sec-title" style="margin-bottom:24px;">Configuration</div>
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:24px;max-width:500px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.4;"></div>
+      <div class="fg">
+        <label class="flbl">Illustration du Header</label>
+        <div class="img-up-area" id="banner-up-area" style="height:120px;">
+          <input type="file" accept="image/*" id="banner-img-input">
+          <div id="banner-up-content" style="height:100%;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;color:var(--text3);font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;">
+              <div style="font-size:24px;margin-bottom:6px;">&#127760;</div>
+              CLIQUER POUR CHOISIR UNE IMAGE DE HEADER
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="banner-remove-btn" style="margin-top:4px;font-size:10px;">&#10005; Retirer l'image header</button>
+    </div>
+
+    <div style="background:var(--panel);border:1px solid var(--border2);padding:24px;max-width:500px;margin-top:20px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.4;"></div>
+      <div style="font-family:'Trebuchet MS','Century Gothic',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:18px;">&#9729; Synchronisation Cloud</div>
+
+      <div class="fg">
+        <label class="flbl">JSONBin.io &#8212; Master Key</label>
+        <input type="password" id="jbin-key-input" class="finput" placeholder="$2b$10$..." autocomplete="off">
+      </div>
+      <div class="fg" style="margin-bottom:0;">
+        <label class="flbl">Statut</label>
+        <div id="jbin-status" style="font-family:'Courier New',monospace;font-size:11px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);color:var(--text3);">
+          Non configur&#233;
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+        <button class="btn btn-cyan" id="jbin-save-btn" style="font-size:10px;padding:10px 20px;">&#10003; Enregistrer la cl&#233;</button>
+        <button class="btn btn-ghost" id="jbin-sync-btn" style="font-size:10px;">&#8635; Synchroniser maintenant</button>
+        <button class="btn btn-ghost" id="jbin-load-btn" style="font-size:10px;">&#11015; Charger depuis le cloud</button>
+      </div>
+      <div style="margin-top:14px;font-family:'Courier New',monospace;font-size:9px;color:var(--text3);line-height:1.8;border-top:1px solid var(--border);padding-top:12px;">
+        Cr&#233;ez un compte gratuit sur <strong style="color:var(--text2);">jsonbin.io</strong><br>
+        Copiez votre <strong style="color:var(--text2);">Master Key</strong> dans le champ ci-dessus.<br>
+        La sauvegarde cloud se d&#233;clenche automatiquement &#224; chaque modification.
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: BETA -->
+  <div id="page-beta" class="page">
+    <div class="heroes-hdr">
+      <div class="sec-title">Beta Test</div>
+      <button class="btn btn-purple" id="btn-new-beta">+ Nouveau Concept</button>
+    </div>
+    <div style="background:var(--panel);border:1px solid rgba(180,78,255,0.3);padding:14px 18px;margin-bottom:24px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:0.5;"></div>
+      <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--purple);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">Zone de conception</div>
+      <div style="font-family:'Trebuchet MS',Arial,sans-serif;font-size:13px;color:var(--text2);line-height:1.6;">
+        Les h&eacute;ros ici sont en phase de test. Ils ne participent pas aux tirages d&apos;&eacute;quipes. Utilisez cette section comme carnet d&apos;id&eacute;es et de prototypes.
+      </div>
+    </div>
+    <div id="beta-grid" class="heroes-grid"></div>
+  </div>
+
+</main>
+</div>
+
+<!-- MODAL: HERO FORM -->
+<div id="hero-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-ttl" id="hero-modal-title">NOUVEAU H&#201;ROS</span>
+      <button class="modal-x" id="hero-modal-close">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="flbl">Illustration &#8212; Format Carte (ratio 5:7)</label>
+        <div class="img-up-area" id="img-up-area">
+          <input type="file" accept="image/*" id="hero-img-input">
+          <div id="img-up-content">
+            <div class="img-hint-wrap">
+              <span class="img-hint-ico">&#127183;</span>
+              CLIQUER POUR IMPORTER<br>
+              <span style="font-size:9px;opacity:0.5">Portrait &#183; ratio 5:7</span>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="hero-img-data" value="">
+      </div>
+      <div class="fg">
+        <label class="flbl">Nom du H&#233;ros</label>
+        <input type="text" id="hero-name-input" class="finput" placeholder="Ex: Kael'Vor l'Eternel">
+      </div>
+      <div id="abilities-container"></div>
+      <button class="btn btn-ghost" id="btn-add-ability" style="width:100%;margin-top:4px;">+ AJOUTER UNE CAPACIT&#201;</button>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" id="hero-modal-cancel">Annuler</button>
+      <button class="btn btn-cyan" id="hero-modal-save">&#10003; SAUVEGARDER</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ABILITY DETAIL -->
+<div id="ability-modal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hdr">
+      <span class="modal-ttl">CAPACIT&#201;</span>
+      <button class="modal-x" id="ability-modal-close">&#10005;</button>
+    </div>
+    <div class="am-hero" id="am-hero"></div>
+    <div class="am-name" id="am-name"></div>
+    <div class="am-tag"  id="am-tag"></div>
+    <div class="am-rules" id="am-rules"></div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" id="ability-modal-ok">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======= CONSTANTS & DATA =======
+var STORAGE_KEY  = 'mba_heroes';
+var STATS_KEY    = 'mba_stats';
+var BANNER_KEY   = 'mba_banner';
+var BETA_KEY     = 'mba_beta';
+// Firebase config
+var FB_CONFIG = {
+  apiKey: "AIzaSyB0Wy0jmxgf3SjwsJQKH9cP-NFMPRlRg1E",
+  authDomain: "multiverse-battle-arena.firebaseapp.com",
+  databaseURL: "https://multiverse-battle-arena-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "multiverse-battle-arena",
+  storageBucket: "multiverse-battle-arena.firebasestorage.app",
+  messagingSenderId: "192935100145",
+  appId: "1:192935100145:web:9154c257fe142efa6a7350"
+};
+var fbApp = firebase.initializeApp(FB_CONFIG);
+var fbDb  = firebase.database();
+var FB_PATH = 'mba';
+
+// -- migrate old keys --
+(function(){
+  var oldKeys = ['mba_heroes2','arena_heroes'];
+  oldKeys.forEach(function(k){
+    try {
+      var raw = localStorage.getItem(k);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || !parsed.length) return;
+      var cur = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+      var ids = {}; cur.forEach(function(h){ ids[h.id]=true; });
+      var merged = cur.concat(parsed.filter(function(h){ return !ids[h.id]; }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      localStorage.removeItem(k);
+    } catch(e){}
+  });
+})();
+
+var heroes = (function(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } })();
+var stats  = (function(){ try{ return JSON.parse(localStorage.getItem(STATS_KEY)||'[]');   }catch(e){ return []; } })();
+var betaHeroes = (function(){ try{ return JSON.parse(localStorage.getItem(BETA_KEY)||'[]'); }catch(e){ return []; } })();
+
+var editingHeroId = null;
+var abilityCount  = 0;
+var lastTeams     = null; // store last generated teams for win recording
+
+function saveHeroes() { try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(heroes)); }catch(e){} }
+function saveStats()  { try{ localStorage.setItem(STATS_KEY,   JSON.stringify(stats));  }catch(e){} }
+function saveBeta()   { try{ localStorage.setItem(BETA_KEY,    JSON.stringify(betaHeroes)); }catch(e){} }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// -- ability icons --
+function abilityIcon(type) {
+  if (type === 'active')  return '\u26a1'; // lightning
+  if (type === 'passive') return '\u1f6e1'; // shield - fallback below
+  if (type === 'special') return '\u2605'; // star
+  return '\u25cb';
+}
+// safe cross-browser icons
+var ICONS = { active:'\u26A1', passive:'\uD83D\uDEE1', special:'\u2605' };
+// some browsers struggle with shield emoji, use - instead
+var ICONS2 = { active:'[A]', passive:'[P]', special:'[S]' };
+function getIcon(type) {
+  if (type === 'active')  return '\u26A1';
+  if (type === 'passive') return '\u25C8';
+  if (type === 'special') return '\u2605';
+  return '\u25CB';
+}
+
+// ======= BANNER ==================
+(function(){
+  var stored = localStorage.getItem(BANNER_KEY);
+  if (stored) applyBanner(stored);
+})();
+
+function applyBanner(src) {
+  var wrap = document.getElementById('hdr-banner-wrap');
+  wrap.innerHTML = '';
+  var img = document.createElement('img');
+  img.src = src; img.className = 'hdr-banner'; img.alt = '';
+  wrap.appendChild(img);
+}
+
+document.getElementById('banner-img-input').addEventListener('change', function(evt){
+  var file = evt.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    localStorage.setItem(BANNER_KEY, e.target.result);
+    applyBanner(e.target.result);
+    updateBannerPreview(e.target.result);
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('banner-remove-btn').addEventListener('click', function(){
+  localStorage.removeItem(BANNER_KEY);
+  var wrap = document.getElementById('hdr-banner-wrap');
+  wrap.innerHTML = '<div class="hdr-banner-ph" id="hdr-banner-ph">MBA</div>';
+  updateBannerPreview(null);
+});
+
+function updateBannerPreview(src) {
+  var c = document.getElementById('banner-up-content');
+  if (src) {
+    c.innerHTML = '';
+    var img = document.createElement('img');
+    img.src = src; img.style.cssText = 'width:100%;height:120px;object-fit:cover;display:block;';
+    c.appendChild(img);
+  } else {
+    c.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;color:var(--text3);font-family:\'Courier New\',monospace;font-size:10px;letter-spacing:2px;"><div style="font-size:24px;margin-bottom:6px;">MBA</div>CLIQUER POUR CHOISIR UNE IMAGE DE HEADER</div></div>';
+  }
+}
+
+// ======= NAV =======
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if (name === 'heroes') renderHeroes();
+  if (name === 'stats')  renderStats();
+  if (name === 'beta')   renderBeta();
+  if (name === 'settings') jbinInit();
+}
+['generate','heroes','stats','settings','beta'].forEach(function(n){
+  document.getElementById('nav-'+n).addEventListener('click', function(){ showPage(n); });
+});
+
+// ======= GENERATE =======
+document.getElementById('btn-generate').addEventListener('click', generateTeams);
+
+function generateTeams() {
+  var area = document.getElementById('result-area');
+  // Heroes eligible for normal matchmaking: must have active + passive (or special)
+  var valid = heroes.filter(function(h){
+    var hasNormal = h.abilities.some(function(a){ return a.type==='active'; }) &&
+                    h.abilities.some(function(a){ return a.type==='passive'; });
+    var hasSpecial = h.abilities.some(function(a){ return a.type==='special'; });
+    return hasNormal || hasSpecial;
+  });
+  if (valid.length < 4) {
+    area.innerHTML = '';
+    var msg = document.createElement('div'); msg.className = 'no-result';
+    msg.innerHTML = 'DONN\u00c9ES INSUFFISANTES<br><span style="font-size:9px;opacity:0.4">IL FAUT AU MOINS 4 H\u00c9ROS VALIDES</span>';
+    area.appendChild(msg);
+    return;
+  }
+  var shuffled = valid.slice().sort(function(){ return Math.random()-0.5; });
+  var t1 = assignAbilities([shuffled[0], shuffled[1]]);
+  var t2 = assignAbilities([shuffled[2], shuffled[3]]);
+  lastTeams = { t1:t1, t2:t2 };
+
+  area.innerHTML = '';
+  var wrap = document.createElement('div'); wrap.className = 'teams-wrap';
+
+  var ts = document.createElement('div'); ts.className = 'teams-ts';
+  ts.textContent = '// TIRAGE '+new Date().toLocaleTimeString()+' \u2014 COMBAT PROTOCOL ENGAGED //';
+  wrap.appendChild(ts);
+
+  // Team Alpha (blue)
+  wrap.appendChild(makeTeamBlock('alpha', 'EQUIPE ALPHA', t1));
+
+  // VS separator
+  var vsSep = document.createElement('div'); vsSep.className = 'vs-separator';
+  var vsBadge = document.createElement('div'); vsBadge.className = 'vs-badge';
+  vsBadge.textContent = 'VS';
+  vsSep.appendChild(vsBadge);
+  wrap.appendChild(vsSep);
+
+  // Team Beta (orange)
+  wrap.appendChild(makeTeamBlock('beta', 'EQUIPE BETA', t2));
+
+  // Win recording section
+  wrap.appendChild(makeWinSection(t1, t2));
+
+  area.appendChild(wrap);
+}
+
+function assignAbilities(team) {
+  return team.map(function(hero){
+    // If hero has a special ability, use it (replaces active+passive)
+    var specials = hero.abilities.filter(function(a){ return a.type==='special'; });
+    if (specials.length > 0) {
+      return { hero:hero, ability:specials[Math.floor(Math.random()*specials.length)], isSpecial:true };
+    }
+    // Otherwise assign active or passive - balance across team done separately
+    return { hero:hero, ability:null, isSpecial:false };
+  }).map(function(slot, i, arr){
+    if (slot.isSpecial) return slot;
+    // Balance: one active, one passive per team
+    var other = arr[1-i];
+    var myType, otherType;
+    if (other && other.isSpecial) {
+      // other is special, we freely pick
+      myType = Math.random()<0.5 ? 'active' : 'passive';
+    } else {
+      myType = i===0 ? (Math.random()<0.5?'active':'passive') : null;
+      if (i===1 && arr[0].ability) {
+        myType = arr[0].ability.type === 'active' ? 'passive' : 'active';
+      } else if (i===1) {
+        myType = Math.random()<0.5 ? 'active' : 'passive';
+      }
+    }
+    var pool = slot.hero.abilities.filter(function(a){ return a.type===myType; });
+    if (!pool.length) pool = slot.hero.abilities; // fallback
+    slot.ability = pool[Math.floor(Math.random()*pool.length)];
+    return slot;
+  });
+}
+
+function makeTeamBlock(team, label, slots) {
+  var block = document.createElement('div'); block.className = 'team-block';
+  var panel = document.createElement('div'); panel.className = 'team-panel team-'+team;
+  var lbl = document.createElement('div'); lbl.className = 'team-lbl';
+  lbl.textContent = '\u25c8 '+label;
+  panel.appendChild(lbl);
+  var cards = document.createElement('div'); cards.className = 'result-cards';
+  slots.forEach(function(s){ cards.appendChild(makeResultCard(s, team)); });
+  panel.appendChild(cards);
+  block.appendChild(panel);
+  return block;
+}
+
+function makeResultCard(slot, team) {
+  var hero = slot.hero; var ability = slot.ability;
+  var card = document.createElement('div'); card.className = 'result-card';
+
+  // Image zone
+  var imgDiv = document.createElement('div'); imgDiv.className = 'rc-img';
+  if (hero.image) {
+    var imgEl = document.createElement('img'); imgEl.src = hero.image; imgDiv.appendChild(imgEl);
+  } else {
+    var ph = document.createElement('div'); ph.className = 'rc-img-ph'; ph.textContent = '\u2694'; imgDiv.appendChild(ph);
+  }
+  // Name overlay
+  var nameWrap = document.createElement('div'); nameWrap.className = 'rc-name-wrap';
+  var nameEl = document.createElement('div'); nameEl.className = 'rc-name'; nameEl.textContent = hero.name;
+  nameWrap.appendChild(nameEl); imgDiv.appendChild(nameWrap);
+  card.appendChild(imgDiv);
+
+  // Ability zone
+  var az = document.createElement('div'); az.className = 'rc-ability-zone';
+  var ah = document.createElement('div'); ah.className = 'rc-ability-header';
+  var icon = document.createElement('span'); icon.className = 'ability-icon'; icon.textContent = getIcon(ability.type);
+  var pill = document.createElement('span'); pill.className = 'a-pill '+ability.type;
+  pill.textContent = ability.type === 'active' ? 'ACTIVE' : (ability.type === 'passive' ? 'PASSIVE' : 'SP\u00c9CIALE');
+  var aName = document.createElement('div'); aName.className = 'a-name'; aName.textContent = ability.name;
+  ah.appendChild(icon); ah.appendChild(pill); ah.appendChild(aName);
+  az.appendChild(ah);
+  var hint = document.createElement('div'); hint.className = 'a-hint';
+  hint.textContent = ability.rules ? '[ Cliquer pour les r\u00e8gles ]' : '[ Aucune r\u00e8gle ]';
+  az.appendChild(hint);
+  az.addEventListener('click', function(){ showAbilityDetail(ability.name, ability.type, ability.rules||'', hero.name); });
+  card.appendChild(az);
+  return card;
+}
+
+// -- Win recording --
+function makeWinSection(t1, t2) {
+  var sec = document.createElement('div'); sec.className = 'win-section';
+  var title = document.createElement('div'); title.className = 'win-title';
+  title.textContent = '\u2694 ENREGISTRER LE R\u00c9SULTAT';
+  sec.appendChild(title);
+  var btns = document.createElement('div'); btns.className = 'win-buttons';
+
+  function makeWinBtn(label, cls, winner) {
+    var btn = document.createElement('button'); btn.className = 'win-btn '+cls;
+    btn.textContent = label;
+    btn.addEventListener('click', function(){ recordWin(winner, t1, t2); btn.disabled = true; btn.style.opacity='0.5'; });
+    return btn;
+  }
+  btns.appendChild(makeWinBtn('[V] Victoire \u00c9quipe Alpha', 'win-btn-alpha', 'alpha'));
+  btns.appendChild(makeWinBtn('[V] Victoire \u00c9quipe Beta',  'win-btn-beta',  'beta'));
+  btns.appendChild(makeWinBtn('[=] \u00c9galit\u00e9',           'win-btn-draw',  'draw'));
+  sec.appendChild(btns);
+  return sec;
+}
+
+function recordWin(winner, t1, t2) {
+  var entry = {
+    id: uid(),
+    date: new Date().toLocaleString('fr-FR'),
+    winner: winner,
+    alpha: t1.map(function(s){ return { hero:s.hero.name, ability:s.ability.name, type:s.ability.type }; }),
+    beta:  t2.map(function(s){ return { hero:s.hero.name, ability:s.ability.name, type:s.ability.type }; }),
+  };
+  stats.unshift(entry);
+  saveStatsAndSync();
+  // feedback
+  var msg = winner === 'alpha' ? '\u00c9quipe Alpha enregistr\u00e9e comme gagnante !' :
+            winner === 'beta'  ? '\u00c9quipe Beta enregistr\u00e9e comme gagnante !' : '\u00c9galit\u00e9 enregistr\u00e9e !';
+  alert(msg);
+}
+
+// ======= STATS PAGE =======
+function renderStats() {
+  renderStatsSummary();
+  renderHistoryList();
+}
+
+function renderStatsSummary() {
+  var el = document.getElementById('stats-summary'); el.innerHTML = '';
+  var total  = stats.length;
+  var alphaW = stats.filter(function(s){ return s.winner==='alpha'; }).length;
+  var betaW  = stats.filter(function(s){ return s.winner==='beta';  }).length;
+  var draws  = stats.filter(function(s){ return s.winner==='draw';  }).length;
+
+  function makeCard(num, lbl, color) {
+    var c = document.createElement('div'); c.className = 'stat-card';
+    var n = document.createElement('div'); n.className = 'stat-num'; n.textContent = num; n.style.color = color||'var(--cyan)'; n.style.filter = 'drop-shadow(0 0 8px '+( color||'rgba(0,229,255,0.5)')+')';
+    var l = document.createElement('div'); l.className = 'stat-lbl'; l.textContent = lbl;
+    c.appendChild(n); c.appendChild(l); return c;
+  }
+  el.appendChild(makeCard(total,  'PARTIES JOU\u00c9ES',    'var(--cyan)'));
+  el.appendChild(makeCard(alphaW, 'VICTOIRES ALPHA',        '#4db8ff'));
+  el.appendChild(makeCard(betaW,  'VICTOIRES BETA',         '#ffb347'));
+  el.appendChild(makeCard(draws,  '\u00c9GALIT\u00c9S',     'var(--text2)'));
+
+  // Most winning ability
+  var abilityCounts = {};
+  stats.filter(function(s){ return s.winner!=='draw'; }).forEach(function(s){
+    var winners = s.winner==='alpha' ? s.alpha : s.beta;
+    winners.forEach(function(w){
+      abilityCounts[w.ability] = (abilityCounts[w.ability]||0)+1;
+    });
+  });
+  var topAbility = Object.keys(abilityCounts).sort(function(a,b){ return abilityCounts[b]-abilityCounts[a]; })[0];
+  if (topAbility) {
+    var c2 = document.createElement('div'); c2.className = 'stat-card'; c2.style.gridColumn = '1/-1';
+    var lbl2 = document.createElement('div'); lbl2.className = 'stat-lbl'; lbl2.textContent = 'CAPACIT\u00c9 LA PLUS VICTORIEUSE';
+    var val2 = document.createElement('div'); val2.style.cssText = 'font-size:18px;font-weight:700;color:var(--gold);margin-top:6px;text-shadow:0 0 12px rgba(255,215,64,0.5)';
+    val2.textContent = topAbility + ' (' + abilityCounts[topAbility] + ' victoire' + (abilityCounts[topAbility]>1?'s':'') + ')';
+    c2.appendChild(lbl2); c2.appendChild(val2); el.appendChild(c2);
+  }
+}
+
+function renderHistoryList() {
+  var el = document.getElementById('history-list'); el.innerHTML = '';
+  if (!stats.length) {
+    var msg = document.createElement('div'); msg.className = 'no-stats';
+    msg.innerHTML = 'AUCUNE PARTIE ENREGISTR\u00c9E<br><span style="font-size:9px;opacity:0.4">G\u00c9N\u00c9REZ DES \u00c9QUIPES ET ENREGISTREZ LES R\u00c9SULTATS</span>';
+    el.appendChild(msg); return;
+  }
+  stats.forEach(function(entry){
+    var item = document.createElement('div');
+    item.className = 'history-item win-'+entry.winner;
+
+    var row1 = document.createElement('div'); row1.className = 'history-row';
+    var dateEl = document.createElement('span'); dateEl.className = 'history-date'; dateEl.textContent = entry.date;
+    var winnerEl = document.createElement('span');
+    winnerEl.className = 'history-winner winner-'+entry.winner;
+    winnerEl.textContent = entry.winner==='alpha' ? '[V] ALPHA GAGNE' : entry.winner==='beta' ? '[V] BETA GAGNE' : '[=] \u00c9GALIT\u00c9';
+    row1.appendChild(dateEl); row1.appendChild(winnerEl);
+    item.appendChild(row1);
+
+    function teamLine(slots, label) {
+      var r = document.createElement('div'); r.className = 'history-heroes';
+      r.textContent = label+': '+slots.map(function(s){ return s.hero; }).join(' & ');
+      var r2 = document.createElement('div'); r2.className = 'history-abilities';
+      r2.textContent = slots.map(function(s){ return getIcon(s.type)+' '+s.ability; }).join('  |  ');
+      item.appendChild(r); item.appendChild(r2);
+    }
+    teamLine(entry.alpha, '[B] Alpha');
+    teamLine(entry.beta,  '[O] Beta');
+
+    var delBtn = document.createElement('button'); delBtn.className = 'history-del'; delBtn.textContent = '\u2715';
+    delBtn.addEventListener('click', function(){
+      stats = stats.filter(function(s){ return s.id !== entry.id; });
+      saveStatsAndSync(); renderStats();
+    });
+    item.appendChild(delBtn);
+    el.appendChild(item);
+  });
+}
+
+document.getElementById('btn-clear-stats').addEventListener('click', function(){
+  if (confirm('Effacer tout l\'historique ?')) { stats = []; saveStatsAndSync(); renderStats(); }
+});
+
+// ======= HEROES PAGE =======
+function renderHeroes() {
+  var grid = document.getElementById('heroes-grid'); grid.innerHTML = '';
+  if (!heroes.length) {
+    var msg = document.createElement('div'); msg.className = 'no-heroes';
+    msg.innerHTML = 'AUCUN H\u00c9ROS ENREGISTR\u00c9<br><span style="font-size:9px;opacity:0.4">CR\u00c9EZ VOTRE PREMIER COMBATTANT</span>';
+    grid.appendChild(msg); return;
+  }
+  heroes.forEach(function(hero){
+    var card = document.createElement('div'); card.className = 'hero-card';
+    ['card-top-bar','card-bot-bar'].forEach(function(c){ var d=document.createElement('div');d.className=c;card.appendChild(d); });
+    ['tl','tr','bl','br'].forEach(function(c){ var d=document.createElement('div');d.className='cc '+c;card.appendChild(d); });
+
+    var acts = document.createElement('div'); acts.className = 'card-acts';
+    var btnEdit = document.createElement('button'); btnEdit.className='card-act-btn ca-edit'; btnEdit.textContent='\u270e';
+    var btnDel  = document.createElement('button'); btnDel.className='card-act-btn ca-del';  btnDel.textContent='\u2715';
+    acts.appendChild(btnEdit); acts.appendChild(btnDel); card.appendChild(acts);
+    btnEdit.addEventListener('click', function(e){ e.stopPropagation(); openHeroModal(hero.id); });
+    btnDel.addEventListener('click',  function(e){ e.stopPropagation(); deleteHero(hero.id); });
+
+    var imgDiv = document.createElement('div'); imgDiv.className='card-img';
+    if (hero.image){ var imgEl=document.createElement('img'); imgEl.src=hero.image; imgEl.alt=''; imgDiv.appendChild(imgEl); }
+    else { imgDiv.innerHTML='<div class="card-img-ph">\u2694</div>'; }
+    card.appendChild(imgDiv);
+
+    var ns = document.createElement('div'); ns.className='card-name-strip';
+    var nt = document.createElement('div'); nt.className='card-name'; nt.textContent=hero.name;
+    ns.appendChild(nt); card.appendChild(ns);
+
+    var abDiv = document.createElement('div'); abDiv.className='card-abilities';
+    hero.abilities.forEach(function(a){
+      var row = document.createElement('div'); row.className='card-ab-row';
+      var ico = document.createElement('span'); ico.className='ab-icon'; ico.textContent=getIcon(a.type);
+      var txt = document.createElement('span'); txt.className='ab-txt'; txt.textContent=a.name;
+      var tag = document.createElement('span'); tag.className='ab-tag '+a.type;
+      tag.textContent = a.type==='active'?'ACT':(a.type==='passive'?'PAS':'SP\u00c9C');
+      row.appendChild(ico); row.appendChild(txt); row.appendChild(tag);
+      row.addEventListener('click', function(e){ e.stopPropagation(); showAbilityDetail(a.name,a.type,a.rules||'',hero.name); });
+      abDiv.appendChild(row);
+    });
+    card.appendChild(abDiv);
+    grid.appendChild(card);
+  });
+}
+
+function deleteHero(id) {
+  if (confirm('Supprimer ce h\u00e9ros ?')) { heroes=heroes.filter(function(h){return h.id!==id;}); saveHeroesAndSync(); renderHeroes(); }
+}
+
+// ======= HERO MODAL =======
+document.getElementById('btn-new-hero').addEventListener('click', function(){ openHeroModal(null); });
+document.getElementById('btn-add-ability').addEventListener('click', function(){ addAbilityField(null); });
+document.getElementById('hero-modal-close').addEventListener('click', closeHeroModal);
+document.getElementById('hero-modal-cancel').addEventListener('click', closeHeroModal);
+document.getElementById('hero-modal-save').addEventListener('click', saveHero);
+document.getElementById('hero-modal').addEventListener('click', function(e){ if(e.target===this) closeHeroModal(); });
+
+function openHeroModal(heroId) {
+  editingHeroId = heroId||null; abilityCount = 0;
+  document.getElementById('abilities-container').innerHTML = '';
+  document.getElementById('hero-modal-title').textContent = heroId ? 'MODIFIER LE H\u00c9ROS' : 'NOUVEAU H\u00c9ROS';
+  document.getElementById('hero-img-data').value = '';
+  setImgPreview(null);
+  if (heroId) {
+    var h = heroes.find(function(h){ return h.id===heroId; });
+    document.getElementById('hero-name-input').value = h.name;
+    if (h.image){ document.getElementById('hero-img-data').value=h.image; setImgPreview(h.image); }
+    h.abilities.forEach(function(a){ addAbilityField(a); });
+  } else {
+    document.getElementById('hero-name-input').value = '';
+    addAbilityField({type:'active'}); addAbilityField({type:'passive'});
+  }
+  document.getElementById('hero-modal').classList.remove('hidden');
+}
+function closeHeroModal(){ document.getElementById('hero-modal').classList.add('hidden'); }
+
+function addAbilityField(ability) {
+  var id   = abilityCount++;
+  var type = (ability&&ability.type)||'active';
+  var name = (ability&&ability.name)||'';
+  var rules= (ability&&ability.rules)||'';
+
+  var block = document.createElement('div');
+  block.className = 'ab-block is-'+type; block.id = 'ab-'+id;
+
+  // header
+  var hdr = document.createElement('div'); hdr.className='ab-block-hdr';
+  var ttl = document.createElement('span'); ttl.className='ab-block-ttl t-'+type; ttl.id='ab-ttl-'+id;
+  ttl.textContent = type==='active'?'\u25c6 CAPACIT\u00c9 ACTIVE':(type==='passive'?'\u25c7 CAPACIT\u00c9 PASSIVE':'\u2605 CAPACIT\u00c9 SP\u00c9CIALE');
+  var delBtn = document.createElement('button'); delBtn.className='btn btn-danger'; delBtn.textContent='\u2715';
+  delBtn.addEventListener('click', function(){ block.remove(); });
+  hdr.appendChild(ttl); hdr.appendChild(delBtn); block.appendChild(hdr);
+
+  // special note
+  var specialNote = document.createElement('div'); specialNote.className='special-note'; specialNote.id='ab-note-'+id;
+  specialNote.textContent = '\u2605 Capacit\u00e9 Sp\u00e9ciale : remplace l\'actif ET le passif lors du tirage. Ce h\u00e9ros sera jou\u00e9 avec cette capacit\u00e9 uniquement.';
+  specialNote.style.display = type==='special'?'block':'none';
+  block.appendChild(specialNote);
+
+  // type toggles
+  var tog = document.createElement('div'); tog.className='type-tog';
+  function makeTogBtn(t, label) {
+    var b = document.createElement('button');
+    b.className = 'type-tog-btn'+(type===t?' s-'+t:'');
+    b.id = 'tt-'+t+'-'+id; b.textContent=label;
+    b.addEventListener('click', function(){ setAbType(id, t); });
+    return b;
+  }
+  tog.appendChild(makeTogBtn('active',  'ACTIVE'));
+  tog.appendChild(makeTogBtn('passive', 'PASSIVE'));
+  tog.appendChild(makeTogBtn('special', '\u2605 SP\u00c9CIALE'));
+  block.appendChild(tog);
+
+  var hiddenType = document.createElement('input'); hiddenType.type='hidden'; hiddenType.id='ab-type-'+id; hiddenType.value=type;
+  block.appendChild(hiddenType);
+
+  // name input
+  var fgN = document.createElement('div'); fgN.className='fg'; fgN.style.marginBottom='10px';
+  var lN = document.createElement('label'); lN.className='flbl'; lN.textContent='Nom de la Capacit\u00e9';
+  var iN = document.createElement('input'); iN.type='text'; iN.className='finput'; iN.id='ab-name-'+id; iN.value=name; iN.placeholder='Ex: Lame Quantique';
+  fgN.appendChild(lN); fgN.appendChild(iN); block.appendChild(fgN);
+
+  // rules textarea
+  var fgR = document.createElement('div'); fgR.className='fg'; fgR.style.marginBottom='0';
+  var lR = document.createElement('label'); lR.className='flbl'; lR.textContent='R\u00e8gles';
+  var tR = document.createElement('textarea'); tR.className='ftxt'; tR.id='ab-rules-'+id; tR.value=rules; tR.placeholder='D\u00e9crivez les r\u00e8gles\u2026';
+  fgR.appendChild(lR); fgR.appendChild(tR); block.appendChild(fgR);
+
+  document.getElementById('abilities-container').appendChild(block);
+}
+
+function setAbType(id, type) {
+  document.getElementById('ab-type-'+id).value = type;
+  var block = document.getElementById('ab-'+id); block.className='ab-block is-'+type;
+  var ttl = document.getElementById('ab-ttl-'+id); ttl.className='ab-block-ttl t-'+type;
+  ttl.textContent = type==='active'?'\u25c6 CAPACIT\u00c9 ACTIVE':(type==='passive'?'\u25c7 CAPACIT\u00c9 PASSIVE':'\u2605 CAPACIT\u00c9 SP\u00c9CIALE');
+  ['active','passive','special'].forEach(function(t){
+    var b = document.getElementById('tt-'+t+'-'+id);
+    if (b) b.className='type-tog-btn'+(type===t?' s-'+t:'');
+  });
+  var note = document.getElementById('ab-note-'+id);
+  if (note) note.style.display = type==='special'?'block':'none';
+}
+
+function saveHero() {
+  var name = document.getElementById('hero-name-input').value.trim();
+  if (!name){ alert('Donnez un nom au h\u00e9ros !'); return; }
+  var abilities = [];
+  document.querySelectorAll('#abilities-container .ab-block').forEach(function(el){
+    var id = el.id.replace('ab-','');
+    var n = document.getElementById('ab-name-'+id);
+    var t = document.getElementById('ab-type-'+id);
+    var r = document.getElementById('ab-rules-'+id);
+    if (n&&n.value.trim()) abilities.push({id:uid(),name:n.value.trim(),type:t.value,rules:r?r.value.trim():''});
+  });
+  if (!abilities.length){ alert('Ajoutez au moins une capacit\u00e9 !'); return; }
+  var hasNormal = abilities.some(function(a){return a.type==='active';}) && abilities.some(function(a){return a.type==='passive';});
+  var hasSpecial = abilities.some(function(a){return a.type==='special';});
+  if (!hasNormal && !hasSpecial) {
+    if (!confirm('Ce h\u00e9ros n\'a pas la combinaison active+passive ni de capacit\u00e9 sp\u00e9ciale. Il ne participera pas aux tirages. Continuer quand m\u00eame ?')) return;
+  }
+  var image = document.getElementById('hero-img-data').value||null;
+  if (editingHeroId) {
+    var idx = heroes.findIndex(function(h){return h.id===editingHeroId;});
+    heroes[idx] = {id:editingHeroId,name:name,image:image,abilities:abilities};
+  } else {
+    heroes.push({id:uid(),name:name,image:image,abilities:abilities});
+  }
+  saveHeroesAndSync(); closeHeroModal(); renderHeroes();
+}
+
+// ======= IMAGE UPLOAD =======
+document.getElementById('hero-img-input').addEventListener('change', handleImgUpload);
+function handleImgUpload(evt){
+  var file=evt.target.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){ document.getElementById('hero-img-data').value=e.target.result; setImgPreview(e.target.result); };
+  reader.readAsDataURL(file);
+}
+function setImgPreview(src){
+  var c=document.getElementById('img-up-content'); c.innerHTML='';
+  if(src){
+    var wrap=document.createElement('div'); wrap.className='img-card-wrap';
+    var img=document.createElement('img'); img.src=src; img.alt='';
+    var rmBtn=document.createElement('button'); rmBtn.className='img-rm-btn'; rmBtn.textContent='\u2715 RETIRER';
+    rmBtn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); removeImg(); });
+    wrap.appendChild(img); wrap.appendChild(rmBtn); c.appendChild(wrap);
+  } else {
+    c.innerHTML='<div class="img-hint-wrap"><span class="img-hint-ico">&#127183;</span>CLIQUER POUR IMPORTER<br><span style="font-size:9px;opacity:0.5">Portrait \u00b7 ratio 5:7</span></div>';
+  }
+}
+function removeImg(){
+  document.getElementById('hero-img-data').value='';
+  document.getElementById('hero-img-input').value='';
+  setImgPreview(null);
+}
+
+// ======= ABILITY DETAIL MODAL =======
+document.getElementById('ability-modal-close').addEventListener('click', closeAbilityModal);
+document.getElementById('ability-modal-ok').addEventListener('click', closeAbilityModal);
+document.getElementById('ability-modal').addEventListener('click', function(e){ if(e.target===this) closeAbilityModal(); });
+
+function showAbilityDetail(name, type, rules, heroName){
+  document.getElementById('am-hero').textContent = heroName ? '\u2014 '+heroName+' \u2014' : '';
+  document.getElementById('am-name').textContent = name;
+  var tag=document.getElementById('am-tag'); tag.innerHTML='';
+  var pill=document.createElement('span'); pill.className='a-pill '+type;
+  pill.textContent = type==='active'?'CAPACIT\u00c9 ACTIVE':(type==='passive'?'CAPACIT\u00c9 PASSIVE':'CAPACIT\u00c9 SP\u00c9CIALE');
+  tag.appendChild(pill);
+  var rulesEl=document.getElementById('am-rules');
+  if(rules){ rulesEl.textContent=rules; } else { rulesEl.innerHTML='<span class="empty-rules">Aucune r\u00e8gle renseign\u00e9e.</span>'; }
+  document.getElementById('ability-modal').classList.remove('hidden');
+}
+function closeAbilityModal(){ document.getElementById('ability-modal').classList.add('hidden'); }
+
+// ======= EXPORT / IMPORT =======
+document.getElementById('btn-export').addEventListener('click', exportJSON);
+document.getElementById('import-input').addEventListener('change', importJSON);
+
+function exportJSON(){
+  if(!heroes.length){ alert('Aucun h\u00e9ros \u00e0 exporter !'); return; }
+  try {
+    var data = JSON.stringify(heroes, null, 2);
+    var blob = new Blob([data], {type: 'application/json'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href   = url;
+    a.download = 'mba_heroes_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  } catch(e) {
+    // fallback: open JSON in new tab for manual save
+    var data = JSON.stringify(heroes, null, 2);
+    var win = window.open('', '_blank');
+    if (win) {
+      win.document.write('<pre style="word-wrap:break-word;white-space:pre-wrap;">' + data + '</pre>');
+      win.document.title = 'MBA Heroes Export';
+      alert('Copiez le contenu de la nouvelle fen\u00eatre et sauvegardez-le dans un fichier .json');
+    }
+  }
+}
+function importJSON(evt){
+  var file=evt.target.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var imported=JSON.parse(e.target.result);
+      if(!Array.isArray(imported)) throw new Error();
+      var ids={}; heroes.forEach(function(h){ids[h.id]=true;});
+      var toAdd=imported.filter(function(h){return h.name&&h.abilities&&!ids[h.id];});
+      toAdd.forEach(function(h){if(!h.id)h.id=uid();});
+      heroes=heroes.concat(toAdd);
+      saveHeroesAndSync(); renderHeroes();
+      alert(toAdd.length+' h\u00e9ros import\u00e9(s) !');
+    }catch(err){ alert('Fichier invalide.'); }
+    evt.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+
+// ======= BETA SECTION =======
+var editingBetaId = null;
+
+document.getElementById('btn-new-beta').addEventListener('click', function(){ openBetaModal(null); });
+
+function renderBeta() {
+  var grid = document.getElementById('beta-grid');
+  grid.innerHTML = '';
+  if (!betaHeroes.length) {
+    var msg = document.createElement('div'); msg.className = 'no-beta';
+    msg.innerHTML = 'AUCUN CONCEPT EN COURS<br><span style="font-size:9px;opacity:0.4">COMMENCEZ \u00C0 PROTOTYPER VOS ID\u00C9ES</span>';
+    grid.appendChild(msg); return;
+  }
+  betaHeroes.forEach(function(hero) {
+    var card = document.createElement('div'); card.className = 'beta-card';
+
+    var topBar = document.createElement('div'); topBar.className = 'beta-top-bar'; card.appendChild(topBar);
+    var stamp  = document.createElement('div'); stamp.className  = 'beta-stamp'; stamp.textContent = 'BETA'; card.appendChild(stamp);
+
+    // actions
+    var acts = document.createElement('div'); acts.className = 'card-acts';
+    var btnEdit = document.createElement('button'); btnEdit.className='card-act-btn ca-edit'; btnEdit.textContent='\u270E';
+    var btnDel  = document.createElement('button'); btnDel.className='card-act-btn ca-del';  btnDel.textContent='\u2715';
+    acts.appendChild(btnEdit); acts.appendChild(btnDel); card.appendChild(acts);
+    btnEdit.addEventListener('click', function(e){ e.stopPropagation(); openBetaModal(hero.id); });
+    btnDel.addEventListener('click',  function(e){ e.stopPropagation(); deleteBeta(hero.id); });
+
+    // image
+    var imgDiv = document.createElement('div'); imgDiv.className='card-img';
+    if (hero.image){ var imgEl=document.createElement('img'); imgEl.src=hero.image; imgEl.alt=''; imgDiv.appendChild(imgEl); }
+    else { imgDiv.innerHTML='<div class="card-img-ph">\u2694</div>'; }
+    card.appendChild(imgDiv);
+
+    // name strip
+    var ns = document.createElement('div'); ns.className='beta-name-strip';
+    var nt = document.createElement('div'); nt.className='beta-name'; nt.textContent=hero.name;
+    ns.appendChild(nt); card.appendChild(ns);
+
+    // body: abilities + notes
+    var body = document.createElement('div'); body.className='beta-body';
+
+    if (hero.abilities && hero.abilities.length) {
+      var abWrap = document.createElement('div'); abWrap.className='beta-abilities-mini';
+      hero.abilities.forEach(function(a){
+        var row = document.createElement('div'); row.className='beta-ab-mini';
+        var ico = document.createElement('span'); ico.className='beta-ab-mini-icon'; ico.textContent=getIcon(a.type);
+        var nm  = document.createElement('span'); nm.className='beta-ab-mini-name'; nm.textContent=a.name;
+        var tag = document.createElement('span'); tag.className='beta-ab-mini-tag '+a.type;
+        tag.textContent = a.type==='active'?'ACT':(a.type==='passive'?'PAS':'SP\u00C9C');
+        row.appendChild(ico); row.appendChild(nm); row.appendChild(tag);
+        row.addEventListener('click', function(e){ e.stopPropagation(); showAbilityDetail(a.name,a.type,a.rules||'',hero.name); });
+        abWrap.appendChild(row);
+      });
+      body.appendChild(abWrap);
+    }
+
+    if (hero.notes) {
+      var notesEl = document.createElement('div'); notesEl.className='beta-notes-preview';
+      notesEl.textContent = hero.notes;
+      body.appendChild(notesEl);
+    }
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+
+function deleteBeta(id) {
+  if (confirm('Supprimer ce concept ?')) {
+    betaHeroes = betaHeroes.filter(function(h){ return h.id!==id; });
+    saveBetaAndSync(); renderBeta();
+  }
+}
+
+// Beta modal - reuses hero modal but saves to betaHeroes
+function openBetaModal(heroId) {
+  editingBetaId = heroId || null;
+  editingHeroId = null; // make sure we don't confuse with hero modal
+  abilityCount = 0;
+  document.getElementById('abilities-container').innerHTML = '';
+  document.getElementById('hero-modal-title').textContent = heroId ? 'MODIFIER LE CONCEPT' : 'NOUVEAU CONCEPT BETA';
+  document.getElementById('hero-img-data').value = '';
+  setImgPreview(null);
+
+  // Add notes field dynamically
+  var modalBody = document.querySelector('#hero-modal .modal-body');
+  var existingNotes = document.getElementById('beta-notes-field');
+  if (!existingNotes) {
+    var notesGroup = document.createElement('div'); notesGroup.className='fg'; notesGroup.id='beta-notes-field';
+    var notesLbl = document.createElement('label'); notesLbl.className='flbl'; notesLbl.textContent='Notes / Id\u00E9es';
+    var notesTxt = document.createElement('textarea'); notesTxt.className='ftxt'; notesTxt.id='beta-notes-input';
+    notesTxt.placeholder='Id\u00E9es de gameplay, notes de conception, TODO\u2026'; notesTxt.style.minHeight='100px';
+    notesGroup.appendChild(notesLbl); notesGroup.appendChild(notesTxt);
+    // insert before abilities-container
+    var abContainer = document.getElementById('abilities-container');
+    modalBody.insertBefore(notesGroup, abContainer);
+  }
+
+  if (heroId) {
+    var h = betaHeroes.find(function(h){ return h.id===heroId; });
+    document.getElementById('hero-name-input').value = h.name;
+    if (h.image){ document.getElementById('hero-img-data').value=h.image; setImgPreview(h.image); }
+    if (h.abilities) h.abilities.forEach(function(a){ addAbilityField(a); });
+    var ni = document.getElementById('beta-notes-input'); if (ni) ni.value = h.notes||'';
+  } else {
+    document.getElementById('hero-name-input').value = '';
+    var ni2 = document.getElementById('beta-notes-input'); if (ni2) ni2.value = '';
+  }
+
+  // Swap save button to save as beta
+  var saveBtn = document.getElementById('hero-modal-save');
+  saveBtn.onclick = saveBetaHero;
+
+  document.getElementById('hero-modal').classList.remove('hidden');
+}
+
+function saveBetaHero() {
+  var name = document.getElementById('hero-name-input').value.trim();
+  if (!name){ alert('Donnez un nom au concept !'); return; }
+  var abilities = [];
+  document.querySelectorAll('#abilities-container .ab-block').forEach(function(el){
+    var id = el.id.replace('ab-','');
+    var n = document.getElementById('ab-name-'+id);
+    var t = document.getElementById('ab-type-'+id);
+    var r = document.getElementById('ab-rules-'+id);
+    if (n&&n.value.trim()) abilities.push({id:uid(),name:n.value.trim(),type:t.value,rules:r?r.value.trim():''});
+  });
+  var notes = '';
+  var ni = document.getElementById('beta-notes-input'); if (ni) notes = ni.value.trim();
+  var image = document.getElementById('hero-img-data').value||null;
+
+  if (editingBetaId) {
+    var idx = betaHeroes.findIndex(function(h){ return h.id===editingBetaId; });
+    betaHeroes[idx] = {id:editingBetaId, name:name, image:image, abilities:abilities, notes:notes};
+  } else {
+    betaHeroes.push({id:uid(), name:name, image:image, abilities:abilities, notes:notes});
+  }
+  saveBetaAndSync();
+  // restore normal save button
+  document.getElementById('hero-modal-save').onclick = saveHero;
+  // remove notes field so normal hero modal is clean
+  var nf = document.getElementById('beta-notes-field'); if(nf) nf.remove();
+  closeHeroModal();
+  renderBeta();
+}
+
+// Make sure closing the modal restores the normal save handler & cleans up
+var origCloseHeroModal = closeHeroModal;
+closeHeroModal = function() {
+  document.getElementById('hero-modal-save').onclick = saveHero;
+  var nf = document.getElementById('beta-notes-field'); if(nf) nf.remove();
+  document.getElementById('hero-modal').classList.add('hidden');
+  editingBetaId = null;
+};
+
+
+// ======= FIREBASE SYNC =======
+
+function fbSetStatus(msg, color) {
+  var el = document.getElementById('jbin-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || 'var(--text3)';
+}
+
+// Push all data to Firebase
+function fbPush() {
+  var data = { heroes: heroes, beta: betaHeroes, stats: stats, updated: Date.now() };
+  fbDb.ref(FB_PATH).set(data)
+    .then(function() {
+      fbSetStatus('Syncé — ' + new Date().toLocaleTimeString(), 'var(--cyan)');
+    })
+    .catch(function(e) {
+      fbSetStatus('Erreur sync: ' + e.message, 'var(--red)');
+    });
+}
+
+// Pull data from Firebase and merge
+function fbPull() {
+  fbSetStatus('Chargement…', 'var(--gold)');
+  fbDb.ref(FB_PATH).once('value')
+    .then(function(snapshot) {
+      var rec = snapshot.val();
+      if (!rec) { fbSetStatus('Aucune donnée dans le cloud.', 'var(--gold)'); return; }
+      // Merge heroes
+      if (Array.isArray(rec.heroes)) {
+        var ids = {}; heroes.forEach(function(h){ ids[h.id]=true; });
+        heroes = heroes.concat(rec.heroes.filter(function(h){ return !ids[h.id]; }));
+        saveHeroes();
+      }
+      // Merge beta
+      if (Array.isArray(rec.beta)) {
+        var bids = {}; betaHeroes.forEach(function(h){ bids[h.id]=true; });
+        betaHeroes = betaHeroes.concat(rec.beta.filter(function(h){ return !bids[h.id]; }));
+        saveBeta();
+      }
+      // Merge stats
+      if (Array.isArray(rec.stats)) {
+        var sids = {}; stats.forEach(function(s){ sids[s.id]=true; });
+        stats = stats.concat(rec.stats.filter(function(s){ return !sids[s.id]; }));
+        saveStats();
+      }
+      fbSetStatus('Données chargées !', 'var(--cyan)');
+      renderHeroes(); renderBeta();
+    })
+    .catch(function(e) {
+      fbSetStatus('Erreur chargement: ' + e.message, 'var(--red)');
+    });
+}
+
+// Auto-sync wrappers
+function saveHeroesAndSync() { saveHeroes(); fbPush(); }
+function saveBetaAndSync()   { saveBeta();   fbPush(); }
+function saveStatsAndSync()  { saveStats();  fbPush(); }
+
+// Config page buttons
+document.getElementById('jbin-sync-btn').addEventListener('click', function() {
+  fbSetStatus('Synchronisation…', 'var(--gold)');
+  fbPush();
+});
+document.getElementById('jbin-load-btn').addEventListener('click', function() {
+  if (!confirm('Charger depuis le cloud ? Les données seront fusionnées.')) return;
+  fbPull();
+});
+// Hide the key input row — not needed with Firebase
+(function() {
+  var saveBtn = document.getElementById('jbin-save-btn');
+  if (saveBtn) saveBtn.style.display = 'none';
+  var keyInput = document.getElementById('jbin-key-input');
+  if (keyInput) keyInput.closest('.fg').style.display = 'none';
+  fbSetStatus('Firebase connecté — prêt', 'var(--cyan)');
+})();
+
+// Auto-load on startup
+fbPull();
+
+// ======= BETA SECTION =======
+var editingBetaId = null;
+
+document.getElementById('btn-new-beta').addEventListener('click', function(){ openBetaModal(null); });
+
+function renderBeta() {
+  var grid = document.getElementById('beta-grid');
+  grid.innerHTML = '';
+  if (!betaHeroes.length) {
+    var msg = document.createElement('div'); msg.className = 'no-beta';
+    msg.innerHTML = 'AUCUN CONCEPT EN COURS<br><span style="font-size:9px;opacity:0.4">COMMENCEZ \u00C0 PROTOTYPER VOS ID\u00C9ES</span>';
+    grid.appendChild(msg); return;
+  }
+  betaHeroes.forEach(function(hero) {
+    var card = document.createElement('div'); card.className = 'beta-card';
+
+    var topBar = document.createElement('div'); topBar.className = 'beta-top-bar'; card.appendChild(topBar);
+    var stamp  = document.createElement('div'); stamp.className  = 'beta-stamp'; stamp.textContent = 'BETA'; card.appendChild(stamp);
+
+    // actions
+    var acts = document.createElement('div'); acts.className = 'card-acts';
+    var btnEdit = document.createElement('button'); btnEdit.className='card-act-btn ca-edit'; btnEdit.textContent='\u270E';
+    var btnDel  = document.createElement('button'); btnDel.className='card-act-btn ca-del';  btnDel.textContent='\u2715';
+    acts.appendChild(btnEdit); acts.appendChild(btnDel); card.appendChild(acts);
+    btnEdit.addEventListener('click', function(e){ e.stopPropagation(); openBetaModal(hero.id); });
+    btnDel.addEventListener('click',  function(e){ e.stopPropagation(); deleteBeta(hero.id); });
+
+    // image
+    var imgDiv = document.createElement('div'); imgDiv.className='card-img';
+    if (hero.image){ var imgEl=document.createElement('img'); imgEl.src=hero.image; imgEl.alt=''; imgDiv.appendChild(imgEl); }
+    else { imgDiv.innerHTML='<div class="card-img-ph">\u2694</div>'; }
+    card.appendChild(imgDiv);
+
+    // name strip
+    var ns = document.createElement('div'); ns.className='beta-name-strip';
+    var nt = document.createElement('div'); nt.className='beta-name'; nt.textContent=hero.name;
+    ns.appendChild(nt); card.appendChild(ns);
+
+    // body: abilities + notes
+    var body = document.createElement('div'); body.className='beta-body';
+
+    if (hero.abilities && hero.abilities.length) {
+      var abWrap = document.createElement('div'); abWrap.className='beta-abilities-mini';
+      hero.abilities.forEach(function(a){
+        var row = document.createElement('div'); row.className='beta-ab-mini';
+        var ico = document.createElement('span'); ico.className='beta-ab-mini-icon'; ico.textContent=getIcon(a.type);
+        var nm  = document.createElement('span'); nm.className='beta-ab-mini-name'; nm.textContent=a.name;
+        var tag = document.createElement('span'); tag.className='beta-ab-mini-tag '+a.type;
+        tag.textContent = a.type==='active'?'ACT':(a.type==='passive'?'PAS':'SP\u00C9C');
+        row.appendChild(ico); row.appendChild(nm); row.appendChild(tag);
+        row.addEventListener('click', function(e){ e.stopPropagation(); showAbilityDetail(a.name,a.type,a.rules||'',hero.name); });
+        abWrap.appendChild(row);
+      });
+      body.appendChild(abWrap);
+    }
+
+    if (hero.notes) {
+      var notesEl = document.createElement('div'); notesEl.className='beta-notes-preview';
+      notesEl.textContent = hero.notes;
+      body.appendChild(notesEl);
+    }
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+
+function deleteBeta(id) {
+  if (confirm('Supprimer ce concept ?')) {
+    betaHeroes = betaHeroes.filter(function(h){ return h.id!==id; });
+    saveBetaAndSync(); renderBeta();
+  }
+}
+
+// Beta modal - reuses hero modal but saves to betaHeroes
+function openBetaModal(heroId) {
+  editingBetaId = heroId || null;
+  editingHeroId = null; // make sure we don't confuse with hero modal
+  abilityCount = 0;
+  document.getElementById('abilities-container').innerHTML = '';
+  document.getElementById('hero-modal-title').textContent = heroId ? 'MODIFIER LE CONCEPT' : 'NOUVEAU CONCEPT BETA';
+  document.getElementById('hero-img-data').value = '';
+  setImgPreview(null);
+
+  // Add notes field dynamically
+  var modalBody = document.querySelector('#hero-modal .modal-body');
+  var existingNotes = document.getElementById('beta-notes-field');
+  if (!existingNotes) {
+    var notesGroup = document.createElement('div'); notesGroup.className='fg'; notesGroup.id='beta-notes-field';
+    var notesLbl = document.createElement('label'); notesLbl.className='flbl'; notesLbl.textContent='Notes / Id\u00E9es';
+    var notesTxt = document.createElement('textarea'); notesTxt.className='ftxt'; notesTxt.id='beta-notes-input';
+    notesTxt.placeholder='Id\u00E9es de gameplay, notes de conception, TODO\u2026'; notesTxt.style.minHeight='100px';
+    notesGroup.appendChild(notesLbl); notesGroup.appendChild(notesTxt);
+    // insert before abilities-container
+    var abContainer = document.getElementById('abilities-container');
+    modalBody.insertBefore(notesGroup, abContainer);
+  }
+
+  if (heroId) {
+    var h = betaHeroes.find(function(h){ return h.id===heroId; });
+    document.getElementById('hero-name-input').value = h.name;
+    if (h.image){ document.getElementById('hero-img-data').value=h.image; setImgPreview(h.image); }
+    if (h.abilities) h.abilities.forEach(function(a){ addAbilityField(a); });
+    var ni = document.getElementById('beta-notes-input'); if (ni) ni.value = h.notes||'';
+  } else {
+    document.getElementById('hero-name-input').value = '';
+    var ni2 = document.getElementById('beta-notes-input'); if (ni2) ni2.value = '';
+  }
+
+  // Swap save button to save as beta
+  var saveBtn = document.getElementById('hero-modal-save');
+  saveBtn.onclick = saveBetaHero;
+
+  document.getElementById('hero-modal').classList.remove('hidden');
+}
+
+function saveBetaHero() {
+  var name = document.getElementById('hero-name-input').value.trim();
+  if (!name){ alert('Donnez un nom au concept !'); return; }
+  var abilities = [];
+  document.querySelectorAll('#abilities-container .ab-block').forEach(function(el){
+    var id = el.id.replace('ab-','');
+    var n = document.getElementById('ab-name-'+id);
+    var t = document.getElementById('ab-type-'+id);
+    var r = document.getElementById('ab-rules-'+id);
+    if (n&&n.value.trim()) abilities.push({id:uid(),name:n.value.trim(),type:t.value,rules:r?r.value.trim():''});
+  });
+  var notes = '';
+  var ni = document.getElementById('beta-notes-input'); if (ni) notes = ni.value.trim();
+  var image = document.getElementById('hero-img-data').value||null;
+
+  if (editingBetaId) {
+    var idx = betaHeroes.findIndex(function(h){ return h.id===editingBetaId; });
+    betaHeroes[idx] = {id:editingBetaId, name:name, image:image, abilities:abilities, notes:notes};
+  } else {
+    betaHeroes.push({id:uid(), name:name, image:image, abilities:abilities, notes:notes});
+  }
+  saveBetaAndSync();
+  // restore normal save button
+  document.getElementById('hero-modal-save').onclick = saveHero;
+  // remove notes field so normal hero modal is clean
+  var nf = document.getElementById('beta-notes-field'); if(nf) nf.remove();
+  closeHeroModal();
+  renderBeta();
+}
+
+// Make sure closing the modal restores the normal save handler & cleans up
+var origCloseHeroModal = closeHeroModal;
+closeHeroModal = function() {
+  document.getElementById('hero-modal-save').onclick = saveHero;
+  var nf = document.getElementById('beta-notes-field'); if(nf) nf.remove();
+  document.getElementById('hero-modal').classList.add('hidden');
+  editingBetaId = null;
+};
+
+
+// ======= JSONBIN SYNC =======
+var JBIN_API = 'https://api.jsonbin.io/v3';
+
+function jbinSetStatus(msg, color) {
+  var el = document.getElementById('jbin-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || 'var(--text3)';
+}
+
+
